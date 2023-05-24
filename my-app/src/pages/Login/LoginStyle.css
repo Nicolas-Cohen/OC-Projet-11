@@ -112,3 +112,7 @@
   font-weight: bold;
   padding: 10px;
 }
+
+.error-message {
+  color: red;
+}

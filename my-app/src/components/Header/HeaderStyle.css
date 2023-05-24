@@ -49,3 +49,8 @@
 .main-nav-item:hover {
   text-decoration: underline;
 }
+
+.header-right {
+  display: flex;
+  gap: 5px;
+}
