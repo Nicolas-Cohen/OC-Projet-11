@@ -1,80 +1,83 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 import './LoginStyle.css';
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.auth.token);
 
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const navigate = useNavigate();
+
+  const handleUsernameChange = (event) => {
+    setUsername(event.target.value);
   };
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
 
-  const handleRememberMeChange = (event) => {
-    setRememberMe(event.target.checked);
-  };
-
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
+    const userData = {
+      email: username,
+      password: password
+    };
 
-    try {
-      const response = await fetch("http://localhost:3001/api/v1/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+    fetch('http://localhost:3001/api/v1/user/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userData)
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+
+        if (data.status !== 200) {
+          setError('Invalid username or password');
+          return;
+        } else {
+          dispatch({
+            type: 'LOGIN',
+            payload: {
+              token: data.body.token,
+            }
+          });
+          navigate('/profile');
+        }
+      })
+      .catch(error => {
+        console.error(error);
       });
-
-      if (response.ok) {
-        // Successful login
-        console.log("Login successful!");
-        // Retrieve authentication token from API response
-        const token = await response.json();
-        // Save authentication token to local storage
-        sessionStorage.setItem('token', token.token);
-        sessionStorage.setItem('userId', token.userId);
-        // Redirects the user to their profile  
-        window.location.href = '/profile';
-
-      } else {
-        // Failed login
-        console.log("Invalid username or password");
-        setErrorMessage("Invalid username or password");
-      }
-    } catch (error) {
-      console.log("An error occurred during login:", error);
-      setErrorMessage("An error occurred during login");
-    }
-
-    // Reset the form
-    setEmail("");
-    setPassword("");
-    setRememberMe(false);
   };
+
+  // Si l'utilisateur est déjà connecté, on le redirige vers la page user
+  useEffect(() => {
+    if (token) {
+      navigate('/profile');
+    }
+  }, [token, navigate]);
 
   return (
     <main className="main bg-dark">
       <section className="sign-in-content">
         <i className="fa fa-user-circle sign-in-icon"></i>
         <h1>Sign In</h1>
-        {errorMessage && <p className="error-message">{errorMessage}</p>}
+        {error && <p className="error-message">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="input-wrapper">
             <label htmlFor="email">Username</label>
             <input
-              type="text"
+              type="email"
               id="email"
-              value={email}
-              onChange={handleEmailChange}
+              value={username}
+              onChange={handleUsernameChange}
             />
           </div>
           <div className="input-wrapper">
@@ -90,8 +93,6 @@ function Login() {
             <input
               type="checkbox"
               id="remember-me"
-              checked={rememberMe}
-              onChange={handleRememberMeChange}
             />
             <label htmlFor="remember-me">Remember me</label>
           </div>

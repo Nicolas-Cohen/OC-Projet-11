@@ -1,13 +1,13 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import User from '../../components/User/User';
 import Account from '../../components/Account/Account';
 
 function Profile() {
-  const token = sessionStorage.getItem('token');
+  const token = useSelector((state) => state.auth.token);
 
   if (!token) {
-    // Redirect user to login page if not logged in
     return <Navigate to="/login" />;
   }
 
