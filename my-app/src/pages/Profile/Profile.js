@@ -5,14 +5,15 @@ import User from '../../components/User/User';
 import Account from '../../components/Account/Account';
 
 function Profile() {
-  const token = useSelector((state) => state.auth.token);
-  const navigate = useNavigate();
+  const token = useSelector((state) => state.auth.token); // Sélectionne le token d'authentification à partir du state
+  const navigate = useNavigate(); // Utilise le hook useNavigate pour la navigation
 
   useEffect(() => {
-  if (!token) {
-    navigate('/login');
-  }
-}, [token, navigate]);
+    // Effectue une vérification du token lors du rendu initial et lors des changements du token
+    if (!token) {
+      navigate('/login'); // Redirige vers la page de connexion si le token n'est pas présent
+    }
+  }, [token, navigate]);
 
   return (
     <div className="main bg-dark">

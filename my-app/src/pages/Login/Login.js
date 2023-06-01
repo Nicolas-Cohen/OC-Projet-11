@@ -7,18 +7,18 @@ function Login() {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState(''); // État pour le champ de l'identifiant
+  const [password, setPassword] = useState(''); // État pour le champ du mot de passe
+  const [error, setError] = useState(''); // État pour gérer les erreurs
 
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Utilise le hook useNavigate pour la navigation
 
   const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
+    setUsername(event.target.value); // Met à jour le champ de l'identifiant avec la valeur saisie
   };
 
   const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
+    setPassword(event.target.value); // Met à jour le champ du mot de passe avec la valeur saisie
   };
 
   const handleSubmit = (event) => {
@@ -49,7 +49,7 @@ function Login() {
               token: data.body.token,
             }
           });
-          navigate('/profile');
+          navigate('/profile'); // Redirige vers la page de profil après une connexion réussie
         }
       })
       .catch(error => {
@@ -57,7 +57,7 @@ function Login() {
       });
   };
 
-  // Si l'utilisateur est déjà connecté, on le redirige vers la page user
+  // Si l'utilisateur est déjà connecté, on le redirige vers la page du profil
   useEffect(() => {
     if (token) {
       navigate('/profile');
