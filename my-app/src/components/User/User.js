@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import './UserStyle.css';
 
 function User() {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
-  const user = useSelector((state) => state.auth.username);
-  const firstname = useSelector((state) => state.auth.firstname);
-  const lastname = useSelector((state) => state.auth.lastname);
+  const user = useSelector((state) => state.user.username);
+  const firstname = useSelector((state) => state.user.firstname);
+  const lastname = useSelector((state) => state.user.lastname);
 
   const [showForm, setShowForm] = useState(false);
   const [newUsername, setNewUsername] = useState('');
@@ -24,18 +24,42 @@ function User() {
     event.preventDefault();
 
     try {
-      dispatch({
-        type: 'SET_USER',
-        payload: {
-          username: newUsername,
+      const response = await fetch('http://localhost:3001/api/v1/user/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify({ userName: newUsername }),
       });
 
-      setShowForm(false);
+      if (response.ok) {
+        console.log(response);
+        dispatch({
+          type: 'SET_USER',
+          payload: {
+            username: newUsername,
+            firstname: firstname,
+            lastname: lastname,
+          },
+        });
+
+
+      } else {
+        console.error('Erreur lors de l envoi du nouveau nom d utilisateur');
+      }
+
     } catch (error) {
       console.error('Erreur lors de la requête :', error);
     }
+    setNewUsername('');
+    setShowForm(false);
   };
+
+  useEffect(() => {
+    setNewUsername(user);
+  }, [user]);
+
 
   return (
     <div className="header">
@@ -55,11 +79,11 @@ function User() {
                 />
               </div>
               <div className='divEdit'>
-                <label fort='edit-firstname'>First name:</label>
+                <label htmlFor='edit-firstname'>First name:</label>
                 <input type="text" value={firstname} id='edit-firstname' disabled />
               </div>
               <div className='divEdit'>
-                <label for='edit-lastname'>Last name:</label>
+                <label htmlFor='edit-lastname'>Last name:</label>
                 <input type="text" value={lastname} id='edit-lastname' disabled />
               </div>
               <div className='edit-username-buttons'>
