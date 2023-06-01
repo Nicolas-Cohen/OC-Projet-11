@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import User from '../../components/User/User';
 import Account from '../../components/Account/Account';
 
 function Profile() {
   const token = useSelector((state) => state.auth.token);
+  const navigate = useNavigate();
 
+  useEffect(() => {
   if (!token) {
-    return <Navigate to="/login" />;
+    navigate('/login');
   }
+}, [token, navigate]);
 
   return (
     <div className="main bg-dark">

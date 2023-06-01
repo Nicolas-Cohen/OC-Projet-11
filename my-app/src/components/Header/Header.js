@@ -57,7 +57,7 @@ function Header() {
           <img className="main-nav-logo-image" src={LogoHeader} alt="Argent Bank Logo" />
           <h1 className="sr-only">Argent Bank</h1>
         </Link>
-        <div className='header-right' onClick={handleLogout}>
+        <div className='header-right'>
           <Link to="/profile" className="main-nav-item">
             <i className="fa fa-user-circle"></i>
             {firstname}
